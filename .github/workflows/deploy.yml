@@ -64,13 +64,13 @@ jobs:
               mkdir -p /root/nestconfig
             fi
             # 从临时容器中复制 /app/dist 的内容到宿主机的 /root/nestconfig
-            docker cp temp-nest-admin:/app/dist/. /root/nestconfig/
+            docker cp temp-nest-admin:/app/dist/config. /root/nestconfig/
             # 删除临时容器
             docker rm temp-nest-admin
 
             echo "Running new container..."
             docker run -d --name nest-admin \
-            -v /root/nestconfig:/app/dist \
+            -v /root/nestconfig:/app/dist/config \
             -v /var/log/nginx:/var/log/nginx \
             -p 3001:3001 \
             -p 9551:80 \
