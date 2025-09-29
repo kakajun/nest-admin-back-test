@@ -58,8 +58,8 @@ jobs:
             docker run -d --name nest-admin \
             -v /root/nestconfig:/app/nest-admin/config \
             -v /var/log/nginx:/var/log/nginx \
-            -p 8080:8080 \
-            -p 9880:80 \
+            -p 3001:3001 \
+            -p 9551:80 \
             crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest
 
             echo "Deployment completed successfully."
