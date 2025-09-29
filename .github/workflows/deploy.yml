@@ -56,7 +56,7 @@ jobs:
 
             echo "Running new container..."
             docker run -d --name nest-admin \
-            -v /root/nestconfig:/app/dist/config \
+            -v /root/nestconfig:/app/dist \
             -v /var/log/nginx:/var/log/nginx \
             -p 3001:3001 \
             -p 9551:80 \
