@@ -60,15 +60,7 @@ jobs:
             # 运行一个临时容器，将镜像中的 /app/dist/config 内容填充到新的 nestconfig-volume 卷中
             docker run --rm -v nestconfig-volume:/app/dist/config --name temp-config-initializer crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest true
 
-            echo "Running new container..."
-            docker run -d --name nest-admin \
-            -v nestconfig-volume:/app/dist/config \
-            -v /var/log/nginx:/var/log/nginx \
-            -p 3001:3001 \
-            -p 9551:80 \
-            crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest
 
-            echo "Deployment completed successfully."
             docker run -d --name nest-admin \
             -v /root/nestconfig:/app/dist/config \
             -v /var/log/nginx:/var/log/nginx \
