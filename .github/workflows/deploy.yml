@@ -54,6 +54,20 @@ jobs:
             echo "Pulling latest Docker image..."
             docker pull crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest
 
+            echo "Copying dist from image to host..."
+            # 创建一个临时容器
+            docker create --name temp-nest-admin crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest
+            # 如果宿主机目录已存在，先清空，防止旧文件干扰
+            if [ -d "/root/nestconfig" ]; then
+              rm -rf /root/nestconfig/*
+            else
+              mkdir -p /root/nestconfig
+            fi
+            # 从临时容器中复制 /app/dist 的内容到宿主机的 /root/nestconfig
+            docker cp temp-nest-admin:/app/dist/. /root/nestconfig/
+            # 删除临时容器
+            docker rm temp-nest-admin
+
             echo "Running new container..."
             docker run -d --name nest-admin \
             -v /root/nestconfig:/app/dist \
