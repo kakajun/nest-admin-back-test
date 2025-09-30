@@ -10,15 +10,15 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
-dev.yml
+
 # OS
 .DS_Store
 
 # Tests
 /coverage
 /.nyc_output
-/src/config/prod.yml
-/src/config/test.yml
+/src/config/dev copy.yml
+/src/config/prod copy.yml
 
 # IDEs and editors
 /.idea
