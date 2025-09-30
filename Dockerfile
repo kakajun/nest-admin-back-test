@@ -14,6 +14,9 @@ WORKDIR /usr/app/nest-admin
 FROM node:alpine
 WORKDIR /app
 
+# 设置生产环境变量, 如果不设置会出现环境 undefined 的问题
+ENV NODE_ENV=production
+
 # 安装 Nginx 和 PM2
 RUN apk add --no-cache nginx && npm install -g pm2
 
