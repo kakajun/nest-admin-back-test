@@ -25,6 +25,7 @@ COPY --from=frontend /usr/app/nest-admin /usr/share/nginx/html
 
 # 复制后端文件
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
 # 将 config 目录声明为卷
