@@ -65,7 +65,7 @@ jobs:
             # 启动新容器（使用宿主机的配置目录）
             echo "Starting new container..."
             docker run -d --name nest-admin \
-              -v /root/nestconfig:/app/dist/config \  # 挂载宿主机配置目录
+              -v /root/nestconfig:/app/dist/config \
               -v /var/log/nginx:/var/log/nginx \
               -p 3001:3001 \
               -p 9551:80 \
