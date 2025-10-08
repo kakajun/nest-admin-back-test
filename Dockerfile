@@ -8,7 +8,7 @@ RUN npm run build
 
 # 第二阶段：拉取前端镜像,这里前端镜像改成你自己的
 FROM ghcr.io/kakajun/light-chaser:latest as frontend
-WORKDIR /usr/app/nest-admin
+WORKDIR /usr/app/light-chaser
 
 # 第三阶段：设置 Nginx 和后端环境
 FROM node:alpine
@@ -18,7 +18,7 @@ WORKDIR /app
 RUN apk add --no-cache nginx && npm install -g pm2
 
 # 复制前端文件
-COPY --from=frontend /usr/app/nest-admin /usr/share/nginx/html
+COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
 
 # 复制后端文件
 COPY --from=builder /app/dist ./dist
@@ -33,6 +33,7 @@ COPY --from=builder /app/start.sh /start.sh
 RUN chmod +x /start.sh
 
 # 暴露端口
-EXPOSE 80 3001
+EXPOSE 80 3000
+
 # 启动 Nginx 和后端应用
 CMD ["/start.sh"]
