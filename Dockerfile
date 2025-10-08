@@ -6,13 +6,16 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# 第二阶段：拉取前端镜像,这里前端镜像改成你自己的1
+# 第二阶段：拉取前端镜像,这里前端镜像改成你自己的
 FROM ghcr.io/kakajun/nest-admin-front-test:latest as frontend
 WORKDIR /usr/app/nest-admin
 
 # 第三阶段：设置 Nginx 和后端环境
 FROM node:alpine
 WORKDIR /app
+
+# 设置生产环境变量, 如果不设置会出现环境 undefined 的问题
+ENV NODE_ENV=production
 
 # 安装 Nginx 和 PM2
 RUN apk add --no-cache nginx && npm install -g pm2
@@ -22,8 +25,11 @@ COPY --from=frontend /usr/app/nest-admin /usr/share/nginx/html
 
 # 复制后端文件
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
+# 将 config 目录声明为卷
+VOLUME /app/dist/config
 
 # 复制 Nginx 配置文件
 COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
