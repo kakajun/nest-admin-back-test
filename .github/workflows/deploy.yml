@@ -11,11 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx (if needed)
-        uses: docker/setup-buildx-action@v2
-        if: false # 如果不需要 multi-platform builds, 可以省略此步骤
+        uses: actions/checkout@v4 # 升级到最新版
 
       - name: Login to Alibaba Cloud Container Registry
         run: |
@@ -33,7 +29,7 @@ jobs:
 
     steps:
       - name: SSH to server and deploy
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v1.0.3 # 升级到最新版
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
@@ -41,39 +37,38 @@ jobs:
           script: |
             set -e
 
+            # 登录容器 registry
             echo "Logging into Alibaba Cloud Docker registry..."
             docker login --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password ${{ secrets.ALIYUN_DOCKER_PASSWORD }} crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com
 
-            echo "Stopping and removing existing container if exists..."
-            docker ps -q --filter "name=nest-admin" | grep -q . && docker stop nest-admin || echo "Container nest-admin is not running"
-            docker ps -a -q --filter "name=nest-admin" | grep -q . && docker rm nest-admin || echo "Container nest-admin does not exist"
+            # 停止并删除现有容器
+            echo "Stopping and removing existing container..."
+            docker rm -f nest-admin || true  # 强制删除，不存在则忽略
 
-            echo "Removing old Docker image if exists..."
-            docker images -q crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest | grep -q . && docker rmi crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest || echo "Old image does not exist"
-
+            # 拉取最新镜像
             echo "Pulling latest Docker image..."
             docker pull crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest
 
-            echo "Copying dist from image to host..."
-            # 创建一个临时容器
-            docker create --name temp-nest-admin crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest
-            # 如果宿主机目录已存在，先清空，防止旧文件干扰
-            if [ -d "/root/nestconfig" ]; then
-              rm -rf /root/nestconfig/*
-            else
-              mkdir -p /root/nestconfig
-            fi
-            # 从临时容器中复制 /app/dist 的内容到宿主机的 /root/nestconfig
-            docker cp temp-nest-admin:/app/dist/config. /root/nestconfig/
-            # 删除临时容器
-            docker rm temp-nest-admin
+            # 确保宿主机配置目录存在，避免挂载为空
+            echo "Preparing host config directory..."
+            mkdir -p /root/nestconfig  # 确保宿主机有这个目录
 
-            echo "Running new container..."
+            # 关键修复：如果宿主机配置目录为空，从镜像中复制默认配置
+            if [ -z "$(ls -A /root/nestconfig)" ]; then
+              echo "Copying default config from image to host..."
+              # 运行临时容器，将镜像内的配置复制到宿主机目录
+              docker run --rm -v /root/nestconfig:/host-config \
+                crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest \
+                sh -c "cp -r /app/dist/config/* /host-config/"
+            fi
+
+            # 启动新容器（使用宿主机的配置目录）
+            echo "Starting new container..."
             docker run -d --name nest-admin \
-            -v /root/nestconfig:/app/dist/config \
-            -v /var/log/nginx:/var/log/nginx \
-            -p 3001:3001 \
-            -p 9551:80 \
-            crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest
+              -v /root/nestconfig:/app/dist/config \
+              -v /var/log/nginx:/var/log/nginx \
+              -p 3001:3001 \
+              -p 9551:80 \
+              crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/nest-admin:latest
 
             echo "Deployment completed successfully."
