@@ -6,7 +6,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# 第二阶段：拉取前端镜像,这里前端镜像改成你自己的
+# 第二阶段：拉取前端镜像,这里前端镜像改成你自己的1
 FROM ghcr.io/kakajun/nest-admin-front-test:latest as frontend
 WORKDIR /usr/app/light-chaser
 
