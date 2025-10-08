@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # 第二阶段：拉取前端镜像,这里前端镜像改成你自己的
-FROM ghcr.io/kakajun/nest-admin-front-test:latest as frontend
+FROM ghcr.io/kakajun/light-chaser:latest as frontend
 WORKDIR /usr/app/nest-admin
 
 # 第三阶段：设置 Nginx 和后端环境
