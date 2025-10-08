@@ -32,7 +32,8 @@ COPY --from=builder /app/node_modules ./node_modules
 VOLUME /app/dist/config
 
 # 复制 Nginx 配置文件
-COPY --from=builder /app/nginx.conf /nginx.conf
+
+COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
 
 # 复制启动脚本并设置权限
 COPY --from=builder /app/start.sh /start.sh
