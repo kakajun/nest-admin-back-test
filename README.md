@@ -36,7 +36,7 @@ $ yarn install
 # development
 $ yarn run start
 
-# watch mode
+# watch mode 1
 $ yarn run start:dev
 
 
