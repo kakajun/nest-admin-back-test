@@ -21,7 +21,7 @@ ENV NODE_ENV=production
 RUN apk add --no-cache nginx && npm install -g pm2
 
 # 复制前端文件
-COPY --from=frontend /usr/app/nest-admin /usr/share/nginx/html
+# COPY --from=frontend /usr/app/nest-admin /usr/share/nginx/html
 
 # 复制后端文件
 COPY --from=builder /app/dist ./dist
@@ -32,7 +32,7 @@ COPY --from=builder /app/node_modules ./node_modules
 VOLUME /app/dist/config
 
 # 复制 Nginx 配置文件
-COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /app/nginx.conf /nginx.conf
 
 # 复制启动脚本并设置权限
 COPY --from=builder /app/start.sh /start.sh
