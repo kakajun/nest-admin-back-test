@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # 第二阶段：拉取前端镜像,这里前端镜像改成你自己的
-FROM ghcr.io/kakajun/light-chaser:latest as frontend
+FROM ghcr.io/kakajun/nest-admin-front-test:latest as frontend
 WORKDIR /usr/app/light-chaser
 
 # 第三阶段：设置 Nginx 和后端环境
@@ -33,7 +33,7 @@ COPY --from=builder /app/start.sh /start.sh
 RUN chmod +x /start.sh
 
 # 暴露端口
-EXPOSE 80 3000
+EXPOSE 80 3001
 
 # 启动 Nginx 和后端应用
 CMD ["/start.sh"]
