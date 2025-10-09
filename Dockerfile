@@ -41,5 +41,5 @@ RUN chmod +x /start.sh
 # 暴露端口
 EXPOSE 80 3001
 
-# 启动 Nginx 和后端应用
+# 启动 Nginx 和后端应用 1
 CMD ["/start.sh"]
